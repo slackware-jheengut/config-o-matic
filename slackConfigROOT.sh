@@ -280,12 +280,30 @@ else
   wget -N https://raw.githubusercontent.com/numixproject/numix-kde-theme/master/Numix.qtcurve -P /usr/share/apps/QtCurve/
   mv /usr/share/apps/QtCurve/Numix.qtcurve /usr/share/apps/QtCurve/Numix-KDE.qtcurve
 
+  ## caledonia kde theme
+  wget -N http://sourceforge.net/projects/caledonia/files/Caledonia%20%28Plasma-KDE%20Theme%29/Caledonia-1.6.2.tar.gz -P ~/
+  tar xf ~/Caledonia-1.6.2.tar.gz -C /usr/share/apps/desktoptheme/
+  rm ~/Caledonia-1.6.2.tar.gz
+
   ## get caledonia wallpapers, who doesn't like nice wallpapers?
   wget -N http://sourceforge.net/projects/caledonia/files/Caledonia%20Official%20Wallpapers/Caledonia_Official_Wallpaper_Collection-1.5.tar.gz -P ~/
   tar xf ~/Caledonia_Official_Wallpaper_Collection-1.5.tar.gz
   cp -r ~/Caledonia_Official_Wallpaper_Collection/* /usr/share/wallpapers/
   rm -rf ~/Caledonia_Official_Wallpaper_Collection/
   rm ~/Caledonia_Official_Wallpaper_Collection-1.5.tar.gz
+
+  ## a few numix wallpapers also
+  wget -N http://fc03.deviantart.net/fs71/f/2013/305/3/6/numix___halloween___wallpaper_by_satya164-d6skv0g.zip -P ~/
+  wget -N http://fc00.deviantart.net/fs70/f/2013/249/7/6/numix___fragmented_space_by_me4oslav-d6l8ihd.zip -P ~/
+  wget -N http://fc09.deviantart.net/fs70/f/2013/224/b/6/numix___name_of_the_doctor___wallpaper_by_satya164-d6hvzh7.zip -P ~/
+  unzip numix___halloween___wallpaper_by_satya164-d6skv0g.zip
+  unzip numix___fragmented_space_by_me4oslav-d6l8ihd.zip
+  unzip numix___name_of_the_doctor___wallpaper_by_satya164-d6hvzh7.zip
+
+  cp ~/*.png /usr/share/wallpapers/
+  #cp ~/*.png /usr/share/backgrounds/
+  cp ~/*.jpg /usr/share/wallpapers/
+  #cp ~/*.jpg /usr/share/backgrounds/
 
 fi
 
