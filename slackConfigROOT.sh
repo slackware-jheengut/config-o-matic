@@ -191,11 +191,15 @@ else
   slackpkg update gpg && slackpkg update
   slackpkg install-new && slackpkg upgrade-all
 
+  ## set slackpkg to non-interactive mode to run without prompting
+  ## we set again just in case someone overwrites configs
+  sed -i 's/^BATCH=off/BATCH=on/g' /etc/slackpkg/slackpkg.conf
+  sed -i 's/^DEFAULT_ANSWER=n/DEFAULT_ANSWER=y/g' /etc/slackpkg/slackpkg.conf
   slackpkg update gpg && slackpkg update
   slackpkg install wicd ffmpeg vlc chromium
 
   ## need this for steam
-  if [ "$( uname -m )" = "x86_64" ]
+  if [ "$( uname -m )" = "x86_64" ]; then
     wget -N http://mirrors.slackware.com/slackware/slackware-current/slackware/x/$LIBXSHM -P ~/
     installpkg ~/$LIBXSHM
     rm ~/$LIBXSHM
