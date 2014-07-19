@@ -6,7 +6,7 @@
 
 ## set config files here:
 SBOPKGDL="http://sbopkg.googlecode.com/files/sbopkg-0.37.0-noarch-1_cng.tgz"
-SPPLUSDL="http://sourceforge.net/projects/slackpkgplus/files/slackpkg%2B-1.3.1-noarch-4mt.txz"
+SPPLUSDL="http://sourceforge.net/projects/slackpkgplus/files/slackpkg%2B-1.3.2-noarch-1mt.txz"
 SPPLUSCONF64="https://raw2.github.com/ryanpcmcquen/linuxTweaks/master/slackware/64/slackpkgplus.conf"
 SPPLUSCONF32="https://raw2.github.com/ryanpcmcquen/linuxTweaks/master/slackware/32/slackpkgplus.conf"
 
@@ -29,6 +29,8 @@ TOUCHPCONF="https://raw2.github.com/ryanpcmcquen/linuxTweaks/master/51-synaptics
 
 CALPLAS="Caledonia-1.6.2.tar.gz"
 CALWALL="Caledonia_Official_Wallpaper_Collection-1.5.tar.gz"
+
+LIBXSHM="libxshmfence-1.1-i486-1.txz"
 
 
 if [ ! $UID = 0 ]; then
@@ -192,6 +194,12 @@ else
   slackpkg update gpg && slackpkg update
   slackpkg install wicd ffmpeg vlc chromium
 
+  ## need this for steam
+  if [ "$( uname -m )" = "x86_64" ]
+    wget -N http://mirrors.slackware.com/slackware/slackware-current/slackware/x/$LIBXSHM -P ~/
+    installpkg ~/$LIBXSHM
+    rm ~/$LIBXSHM
+  fi
 
   chmod -x /etc/rc.d/rc.networkmanager
   sed -i 's/^\([^#]\)/#\1/g' /etc/rc.d/rc.inet1.conf
