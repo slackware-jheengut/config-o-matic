@@ -35,6 +35,19 @@ EOF
   exit 1
 fi
 
+
+echo
+echo
+echo "*************************************************************"
+echo "*************************************************************"
+echo "********          WELCOME TO                         ********"
+echo "********              CONFIG-O-MATIC                 ********"
+echo "*************************************************************"
+echo "*************************************************************"
+echo
+echo
+
+
 gkrellm &
 
 wget -N $BASHRC -P ~/
@@ -42,8 +55,12 @@ wget -N $BASHPR -P ~/
 
 wget -N $VIMRC -P ~/
 
+
 ## set tmux scrollback value
 tmux set-option -g history-limit 9999
+## set to xterm otherwise vi will break
+tmux set-option -g default-terminal xterm-color
+
 
 ## git config
 git config --global user.name "$GITNAME"
