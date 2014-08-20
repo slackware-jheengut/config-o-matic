@@ -53,17 +53,17 @@ echo
 echo
 
 
-read -r -p "Would you like to install Wicd? \
+read -r -p "Would you like to install WICD? \
 (NetworkManager will be disabled, and you may need to manually adjust \
 autostart settings) \
  [y/N]: " response
 case $response in
   [yY][eE][sS]|[yY])
     export WICD=true;
-    echo You are installing Wicd.;
+    echo You are installing WICD.;
     ;;
   *)
-    echo You are not installing Wicd.;
+    echo You are not installing WICD.;
     ;;
 esac
 
@@ -81,7 +81,7 @@ case $response in
 esac
 
 if [ "$NEARFREE" != true ]; then
-  read -r -p "Would you like to install additional packages, themes and miscellany? [y/N]: " response
+  read -r -p "Would you like to install additional packages, themes and MISCELLANY? [y/N]: " response
   case $response in
     [yY][eE][sS]|[yY])
       export MISCELLANY=true;
@@ -94,30 +94,31 @@ if [ "$NEARFREE" != true ]; then
 fi
 
 if [ "$NEARFREE" != true ]; then
-  read -r -p "Would you like to install Mate? [y/N]: " response
+  read -r -p "Would you like to install MATE? [y/N]: " response
   case $response in
     [yY][eE][sS]|[yY])
       export MATE=true;
-      echo You have chosen to install Mate.;
+      echo You have chosen to install MATE.;
       ;;
     *)
-      echo You are not installing Mate.;
+      echo You are not installing MATE.;
       ;;
   esac
 fi
 
 if [ "$NEARFREE" != true ]; then
-  read -r -p "Would you like to install additional git repos? [y/N]: " response
+  read -r -p "Would you like to install additional SCRIPTS? [y/N]: " response
   case $response in
     [yY][eE][sS]|[yY])
-      export SBOGIT=true;
-      echo You have chosen to install additional git repos.;
+      export SCRIPTS=true;
+      echo You have chosen to install additional SCRIPTS.;
       ;;
     *)
-      echo You are not installing additional git repos.;
+      echo You are not installing additional SCRIPTS.;
       ;;
   esac
 fi
+
 
 ## configure lilo
 sed -i 's/^#compact/lba32\
@@ -222,12 +223,9 @@ if [ "$NEARFREE" = true ]; then
 
   echo "You have become NEARFREE, to update your kernel, head to freeslack.net."
 elif [ "$MISCELLANY" = true ]; then
-  curl $GETEXTRA | sh
-
   ## set slackpkg to non-interactive mode to run without prompting
   sed -i 's/^BATCH=off/BATCH=on/g' /etc/slackpkg/slackpkg.conf
   sed -i 's/^DEFAULT_ANSWER=n/DEFAULT_ANSWER=y/g' /etc/slackpkg/slackpkg.conf
-
 
   ## although it seems sloppy to update twice,
   ## this prevents breakage if slackpkg gets updated
@@ -441,7 +439,9 @@ if [ "$MATE" = true ] && [ "$NEARFREE" != true ]; then
   slackpkg install msb
 fi
 
-if [ "$SBOGIT" = true ] && [ "$NEARFREE" != true ]; then
+if [ "$SCRIPTS" = true ] && [ "$NEARFREE" != true ]; then
+  curl $GETEXTRA | sh
+
   ## slackbuilds repo
   git clone git://slackbuilds.org/slackbuilds.git sbo
   cd ~/sbo/
