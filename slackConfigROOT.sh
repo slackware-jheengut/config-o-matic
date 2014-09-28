@@ -250,6 +250,21 @@ else
   's_^# http://ftp.osuosl.org/.2/slackware/slackware64-14.1/_http://ftp.osuosl.org/.2/slackware/slackware64-14.1/_g' /etc/slackpkg/mirrors
 fi
 
+
+if [ -z "$( cat /etc/profile | grep 'export EDITOR' && cat /etc/profile | grep 'export VISUAL' )" ]; then
+  echo >> /etc/profile
+  echo "export EDITOR=vim" >> /etc/profile
+  echo "export VISUAL=vim" >> /etc/profile
+  echo >> /etc/profile
+fi
+
+if [ -z "$( cat /etc/profile | grep 'alias ls=' )" ]; then
+  echo >> /etc/profile
+  echo "alias ls='ls --color=auto'" >> /etc/profile
+  echo >> /etc/profile
+fi
+
+
 wget -N $BASHRC -P ~/
 wget -N $BASHPR -P ~/
 wget -N $VIMRC -P ~/
@@ -261,7 +276,7 @@ wget -N $INSCRPT -P /etc/
 
 ## set tmux scrollback value
 tmux set-option -g history-limit 9999
-## set to xterm otherwise vi will break
+## set to screen otherwise vim will break
 tmux set-option -g default-terminal screen
 
 ## git config
@@ -508,8 +523,8 @@ elif [ "$MISCELLANY" = true ]; then
     sbopkg -B -i tinyterm
   fi
 
-  if [ -z "$( ls /var/log/packages/ | grep leafpad )" ]; then
-    sbopkg -B -i leafpad
+  if [ -z "$( ls /var/log/packages/ | grep medit )" ]; then
+    sbopkg -B -i medit
   fi
 
   if [ -z "$( ls /var/log/packages/ | grep udevil )" ]; then
