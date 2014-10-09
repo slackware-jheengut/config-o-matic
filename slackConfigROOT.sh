@@ -16,6 +16,8 @@ BASHPR="https://raw2.github.com/ryanpcmcquen/linuxTweaks/master/slackware/root/.
 VIMRC="https://raw2.github.com/ryanpcmcquen/linuxTweaks/master/.vimrc"
 VIMCOLOR="https://raw.githubusercontent.com/ryanpcmcquen/vim-plain/master/colors/elvis.vim"
 
+TMUXCONF="https://raw.githubusercontent.com/ryanpcmcquen/linuxTweaks/master/tmux.conf"
+
 GITNAME="Ryan P.C. McQuen"
 GITEMAIL="ryan.q@linux.com"
 
@@ -28,6 +30,9 @@ ASOUNDPULSECONF="https://raw.githubusercontent.com/ryanpcmcquen/linuxTweaks/mast
 
 GETEXTRASTA="https://raw.githubusercontent.com/ryanpcmcquen/linuxTweaks/master/slackware/getExtraSlackBuildsSTABLE.sh"
 GETEXTRACUR="https://raw.githubusercontent.com/ryanpcmcquen/linuxTweaks/master/slackware/getExtraSlackBuildsCURRENT.sh"
+
+GETSOURCESTA="https://raw.githubusercontent.com/ryanpcmcquen/linuxTweaks/master/slackware/getSystemSlackBuildsSTABLE.sh"
+GETSOURCECUR="https://raw.githubusercontent.com/ryanpcmcquen/linuxTweaks/master/slackware/getSystemSlackBuildsCURRENT.sh"
 
 CALPLAS="Caledonia-1.9.tar.gz"
 CALWALL="Caledonia_Official_Wallpaper_Collection-1.5.tar.gz"
@@ -220,6 +225,13 @@ if [ -z "$( cat /etc/profile | grep 'alias ls=' )" ]; then
   echo >> /etc/profile
 fi
 
+if [ -z "$( cat /etc/profile | grep 'MAKEOPTS' )" ]; then
+  echo >> /etc/profile
+  echo 'if [ "$( nproc )" != 1 ]; then' >> /etc/profile
+  echo '  export MAKEOPTS="-j$( expr $( nproc ) / 2 )"' >> /etc/profile
+  echo 'fi' >> /etc/profile
+  echo >> /etc/profile
+fi
 
 wget -N $BASHRC -P ~/
 wget -N $BASHPR -P ~/
@@ -230,10 +242,8 @@ wget -N $VIMCOLOR -P ~/.vim/colors/
 wget -N $TOUCHPCONF -P /etc/X11/xorg.conf.d/
 wget -N $INSCRPT -P /etc/
 
-## set tmux scrollback value
-tmux set-option -g history-limit 9999
-## set to screen otherwise vim will break
-tmux set-option -g default-terminal screen
+wget -N $TMUXCONF -P /etc/
+
 
 ## git config
 git config --global user.name "$GITNAME"
@@ -597,8 +607,10 @@ fi
 if [ "$NEARFREE" != true ] && [ "$SCRIPTS" = true ]; then
   if [ "$CURRENT" = true ]; then
     wget -N $GETEXTRACUR -P ~/
+    wget -N $GETSOURCECUR -P ~/
   else
     wget -N $GETEXTRASTA -P ~/
+    wget -N $GETSOURCESTA -P ~/
   fi
 
   ## slackbuilds repo
@@ -631,7 +643,6 @@ if [ "$WICD" = true ]; then
   slackpkg install wicd
   chmod -x /etc/rc.d/rc.networkmanager
   sed -i 's/^\([^#]\)/#\1/g' /etc/rc.d/rc.inet1.conf
-  #sed -i 's/^\([^#]\)/#\1/g' /etc/rc.d/rc.wireless.conf
 fi
 
 
