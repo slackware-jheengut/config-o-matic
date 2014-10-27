@@ -8,7 +8,7 @@
 ## note that some configuration options may not match
 ## depending on the system, as config-o-matic tries
 ## to avoid overwriting most files
-CONFIGOMATICVERSION=5.1.1
+CONFIGOMATICVERSION=5.2.3
 
 ## set config files here:
 SBOPKGDL="http://sbopkg.googlecode.com/files/sbopkg-0.37.0-noarch-1_cng.tgz"
@@ -133,6 +133,19 @@ if [ "$NEARFREE" != true ]; then
       ;;
     *)
       echo You are not installing additional SCRIPTS.;
+      ;;
+  esac
+fi
+
+if [ "$NEARFREE" != true ] && [ "$( uname -m )" = "x86_64" ]; then
+  read -p "Would you like to go MULTILIB? [y/N]: " response
+  case $response in
+    [yY][eE][sS]|[yY])
+      export MULTILIB=true;
+      echo You have chosen to go MULTILIB.;
+      ;;
+    *)
+      echo You are not going MULTILIB.;
       ;;
   esac
 fi
@@ -298,15 +311,34 @@ if [ -z "$( ls /etc/slackpkg/slackpkgplus.conf.old )" ] && [ "$NEARFREE" != true
 
   echo >> /etc/slackpkg/slackpkgplus.conf
   echo >> /etc/slackpkg/slackpkgplus.conf
-  echo "#PKGS_PRIORITY=( multilib:.* restricted-current:.* alienbob-current:.* )" >> /etc/slackpkg/slackpkgplus.conf
   echo "#PKGS_PRIORITY=( multilib:.* ktown:.* restricted-current:.* alienbob-current:.* )" >> /etc/slackpkg/slackpkgplus.conf
   echo "#PKGS_PRIORITY=( ktown:.* restricted-current:.* alienbob-current:.* )" >> /etc/slackpkg/slackpkgplus.conf
-  if [ "$CURRENT" = true ]; then
+  if [ "$MULTILIB" != true ]; then
+    if [ "$CURRENT" = true ]; then
+      echo >> /etc/slackpkg/slackpkgplus.conf
+      echo "PKGS_PRIORITY=( restricted-current:.* alienbob-current:.* )" >> /etc/slackpkg/slackpkgplus.conf
+    else
+      echo "#PKGS_PRIORITY=( restricted-current:.* alienbob-current:.* )" >> /etc/slackpkg/slackpkgplus.conf
+    fi
+    echo "#PKGS_PRIORITY=( multilib:.* restricted-current:.* alienbob-current:.* )" >> /etc/slackpkg/slackpkgplus.conf
+  fi
+
+  if [ "$MULTILIB" = true ] && [ "$( uname -m )" = "x86_64" ]; then
+    if [ "$CURRENT" = true ]; then
+      sed -i "s@#MIRRORPLUS\['multilib']=http://taper.alienbase.nl/mirrors/people/alien/multilib/current/@MIRRORPLUS['multilib']=http://taper.alienbase.nl/mirrors/people/alien/multilib/current/@g" \
+      /etc/slackpkg/slackpkgplus.conf
+      echo >> /etc/slackpkg/slackpkgplus.conf
+      echo "PKGS_PRIORITY=( multilib:.* restricted-current:.* alienbob-current:.* )" >> /etc/slackpkg/slackpkgplus.conf
+    else
+      sed -i "s@#MIRRORPLUS\['multilib']=http://taper.alienbase.nl/mirrors/people/alien/multilib/14.1/@MIRRORPLUS['multilib']=http://taper.alienbase.nl/mirrors/people/alien/multilib/14.1/@g" \
+      /etc/slackpkg/slackpkgplus.conf
+      echo >> /etc/slackpkg/slackpkgplus.conf
+      echo "PKGS_PRIORITY=( multilib:.* )" >> /etc/slackpkg/slackpkgplus.conf
+    fi
     echo >> /etc/slackpkg/slackpkgplus.conf
-    echo "PKGS_PRIORITY=( restricted-current:.* alienbob-current:.* )" >> /etc/slackpkg/slackpkgplus.conf
-  else
     echo "#PKGS_PRIORITY=( restricted-current:.* alienbob-current:.* )" >> /etc/slackpkg/slackpkgplus.conf
   fi
+
   echo >> /etc/slackpkg/slackpkgplus.conf
   echo "#PKGS_PRIORITY=( multilib:.* alienbob-current:.* )" >> /etc/slackpkg/slackpkgplus.conf
   echo "#PKGS_PRIORITY=( multilib:.* ktown:.* alienbob-current:.* )" >> /etc/slackpkg/slackpkgplus.conf
@@ -348,6 +380,15 @@ if [ -z "$( ls /etc/slackpkg/slackpkgplus.conf.old )" ] && [ "$NEARFREE" != true
     echo >> /etc/slackpkg/slackpkgplus.conf
   fi
 
+fi
+
+
+if [ "$MULTILIB" = true ] && [ "$( uname -m )" = "x86_64" ]; then
+  slackpkg update gpg && slackpkg update
+  slackpkg install-new && slackpkg upgrade-all
+  slackpkg install multilib
+  sed -i 's/^BATCH=off/BATCH=on/g' /etc/slackpkg/slackpkg.conf
+  sed -i 's/^DEFAULT_ANSWER=n/DEFAULT_ANSWER=y/g' /etc/slackpkg/slackpkg.conf
 fi
 
 
