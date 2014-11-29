@@ -8,7 +8,7 @@
 ## note that some configuration options may not match
 ## depending on the system, as config-o-matic tries
 ## to avoid overwriting most files
-CONFIGOMATICVERSION=5.8.5
+CONFIGOMATICVERSION=5.9.1
 
 
 if [ ! $UID = 0 ]; then
@@ -73,12 +73,24 @@ no_prompt_sbo_pkg_install() {
 }
 
 slackpkg_update_only() {
-  slackpkg update gpg && slackpkg update
+  slackpkg update gpg
+  slackpkg update
 }
 
 slackpkg_full_upgrade() {
   slackpkg_update_only
-  slackpkg install-new && slackpkg upgrade-all
+  slackpkg install-new
+  slackpkg upgrade-all
+}
+
+set_slackpkg_to_auto() {
+  sed -i 's/^BATCH=off/BATCH=on/g' /etc/slackpkg/slackpkg.conf
+  sed -i 's/^DEFAULT_ANSWER=n/DEFAULT_ANSWER=y/g' /etc/slackpkg/slackpkg.conf
+}
+
+set_slackpkg_to_manual() {
+  sed -i 's/^BATCH=on/BATCH=off/g' /etc/slackpkg/slackpkg.conf
+  sed -i 's/^DEFAULT_ANSWER=y/DEFAULT_ANSWER=n/g' /etc/slackpkg/slackpkg.conf
 }
 ##
 
@@ -316,8 +328,7 @@ rm ~/egan-gkrellm.tar.gz
 
 
 ## set slackpkg to non-interactive mode to run without prompting
-sed -i 's/^BATCH=off/BATCH=on/g' /etc/slackpkg/slackpkg.conf
-sed -i 's/^DEFAULT_ANSWER=n/DEFAULT_ANSWER=y/g' /etc/slackpkg/slackpkg.conf
+set_slackpkg_to_auto
 
 
 if [ -z "$( ls /etc/slackpkg/slackpkgplus.conf.old )" ]; then
@@ -405,8 +416,7 @@ if [ "$MULTILIB" = true ] && [ "$( uname -m )" = "x86_64" ]; then
   slackpkg_full_upgrade
   slackpkg_update_only
   slackpkg install multilib
-  sed -i 's/^BATCH=off/BATCH=on/g' /etc/slackpkg/slackpkg.conf
-  sed -i 's/^DEFAULT_ANSWER=n/DEFAULT_ANSWER=y/g' /etc/slackpkg/slackpkg.conf
+  set_slackpkg_to_auto
 fi
 
 
@@ -416,10 +426,15 @@ if [ "$MISCELLANY" = true ]; then
 
   ## set slackpkg to non-interactive mode to run without prompting
   ## we set again just in case someone overwrites configs
-  sed -i 's/^BATCH=off/BATCH=on/g' /etc/slackpkg/slackpkg.conf
-  sed -i 's/^DEFAULT_ANSWER=n/DEFAULT_ANSWER=y/g' /etc/slackpkg/slackpkg.conf
+  set_slackpkg_to_auto
   slackpkg_update_only
   slackpkg install vlc chromium
+
+  ## auto-update once a day to keep the doctor away
+  wget -N \
+    https://raw.githubusercontent.com/ryanpcmcquen/linuxTweaks/master/slackware/daily-slackup \
+    -P /etc/cron.daily/
+  chmod 755 /etc/cron.daily/daily-slackup
 
   ## grab latest firefox developer edition
   curl https://raw.githubusercontent.com/ryanpcmcquen/ryanpc-slackbuilds/master/unofficial/fde/getFDE.sh | sh
@@ -572,9 +587,9 @@ if [ "$MISCELLANY" = true ]; then
   no_prompt_sbo_pkg_install optipng
   ## install the image ultimator now that we have the dependencies
   wget -N \
-    https://raw.githubusercontent.com/ryanpcmcquen/image-ultimator/master/imgult
-  install -m755 imgult /usr/local/bin/
-  rm imgult
+    https://raw.githubusercontent.com/ryanpcmcquen/image-ultimator/master/imgult -P ~/
+  install -m755 ~/imgult /usr/local/bin/
+  rm ~/imgult
   ##
 
   no_prompt_sbo_pkg_install murrine
@@ -666,25 +681,25 @@ if [ "$MISCELLANY" = true ]; then
   rm -rf ./Numix/
 
   wget -N \
-  https://raw.githubusercontent.com/numixproject/numix-kde-theme/master/Numix.colors -P /usr/share/apps/color-schemes/
+    https://raw.githubusercontent.com/numixproject/numix-kde-theme/master/Numix.colors -P /usr/share/apps/color-schemes/
   mv /usr/share/apps/color-schemes/Numix.colors /usr/share/apps/color-schemes/Numix-KDE.colors
   wget -N \
-  https://raw.githubusercontent.com/numixproject/numix-kde-theme/master/Numix.qtcurve -P /usr/share/apps/QtCurve/
+    https://raw.githubusercontent.com/numixproject/numix-kde-theme/master/Numix.qtcurve -P /usr/share/apps/QtCurve/
   mv /usr/share/apps/QtCurve/Numix.qtcurve /usr/share/apps/QtCurve/Numix-KDE.qtcurve
 
   ## caledonia kde theme
   wget -N \
-  http://sourceforge.net/projects/caledonia/files/Caledonia%20%28Plasma-KDE%20Theme%29/$CALPLAS -P ~/
+    http://sourceforge.net/projects/caledonia/files/Caledonia%20%28Plasma-KDE%20Theme%29/$CALPLAS -P ~/
   tar xf ~/$CALPLAS -C /usr/share/apps/desktoptheme/
   rm ~/$CALPLAS
 
   ## caledonia color scheme
   wget -N http://sourceforge.net/projects/caledonia/files/Caledonia%20Color%20Scheme/Caledonia.colors \
-  -P /usr/share/apps/color-schemes/
+    -P /usr/share/apps/color-schemes/
 
   ## get caledonia wallpapers, who doesn't like nice wallpapers?
   wget -N \
-  http://sourceforge.net/projects/caledonia/files/Caledonia%20Official%20Wallpapers/$CALWALL -P ~/
+    http://sourceforge.net/projects/caledonia/files/Caledonia%20Official%20Wallpapers/$CALWALL -P ~/
   tar xf ~/$CALWALL
   cp -r ~/Caledonia_Official_Wallpaper_Collection/* /usr/share/wallpapers/
   rm -rf ~/Caledonia_Official_Wallpaper_Collection/
@@ -692,11 +707,11 @@ if [ "$MISCELLANY" = true ]; then
 
   ## a few numix wallpapers also
   wget -N \
-  http://fc03.deviantart.net/fs71/f/2013/305/3/6/numix___halloween___wallpaper_by_satya164-d6skv0g.zip -P ~/
+    http://fc03.deviantart.net/fs71/f/2013/305/3/6/numix___halloween___wallpaper_by_satya164-d6skv0g.zip -P ~/
   wget -N \
-  http://fc00.deviantart.net/fs70/f/2013/249/7/6/numix___fragmented_space_by_me4oslav-d6l8ihd.zip -P ~/
+    http://fc00.deviantart.net/fs70/f/2013/249/7/6/numix___fragmented_space_by_me4oslav-d6l8ihd.zip -P ~/
   wget -N \
-  http://fc09.deviantart.net/fs70/f/2013/224/b/6/numix___name_of_the_doctor___wallpaper_by_satya164-d6hvzh7.zip -P ~/
+    http://fc09.deviantart.net/fs70/f/2013/224/b/6/numix___name_of_the_doctor___wallpaper_by_satya164-d6hvzh7.zip -P ~/
   unzip numix___halloween___wallpaper_by_satya164-d6skv0g.zip
   unzip numix___fragmented_space_by_me4oslav-d6l8ihd.zip
   unzip numix___name_of_the_doctor___wallpaper_by_satya164-d6hvzh7.zip
@@ -764,8 +779,7 @@ amixer set Master 65%
 alsactl store
 
 ## set slackpkg back to normal
-sed -i 's/^BATCH=on/BATCH=off/g' /etc/slackpkg/slackpkg.conf
-sed -i 's/^DEFAULT_ANSWER=y/DEFAULT_ANSWER=n/g' /etc/slackpkg/slackpkg.conf
+set_slackpkg_to_manual
 
 
 ## create an info file
