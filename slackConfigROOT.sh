@@ -8,7 +8,7 @@
 ## note that some configuration options may not match
 ## depending on the system, as config-o-matic tries
 ## to avoid overwriting most files
-CONFIGOMATICVERSION=5.9.24
+CONFIGOMATICVERSION=5.9.25
 
 
 if [ ! $UID = 0 ]; then
@@ -485,6 +485,7 @@ if [ "$MISCELLANY" = true ]; then
   no_prompt_sbo_pkg_install libtar
   no_prompt_sbo_pkg_install ladspa_sdk
   no_prompt_sbo_pkg_install liblrdf
+  ## celt is broken
   #no_prompt_sbo_pkg_install celt
   no_prompt_sbo_pkg_install jack-audio-connection-kit
   no_prompt_sbo_pkg_install lash
@@ -548,7 +549,8 @@ if [ "$MISCELLANY" = true ]; then
   ##
 
   ## scribus
-  no_prompt_sbo_pkg_install cppunit
+  ## cppunit breaks podofo on 32-bit
+  #no_prompt_sbo_pkg_install cppunit
   no_prompt_sbo_pkg_install podofo
   no_prompt_sbo_pkg_install scribus
   ##
@@ -580,10 +582,11 @@ if [ "$MISCELLANY" = true ]; then
   no_prompt_sbo_pkg_install librecad
   ##
 
-  ## these 3 are for the image ultimator
+  ## these are for the image ultimator
   no_prompt_sbo_pkg_install jpegoptim
   no_prompt_sbo_pkg_install mozjpeg
   no_prompt_sbo_pkg_install optipng
+  no_prompt_sbo_pkg_install gifsicle
   ## install the image ultimator now that we have the dependencies
   wget -N \
     https://raw.githubusercontent.com/ryanpcmcquen/image-ultimator/master/imgult -P ~/
