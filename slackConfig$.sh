@@ -58,7 +58,7 @@ wget -N $BASHRC -P ~/
 wget -N $BASHPR -P ~/
 
 wget -N $VIMRC -P ~/
-mkdir -p ~/.vim/colors/
+mkdir -pv ~/.vim/colors/
 wget -N $VIMCOLOR -P ~/.vim/colors/
 
 ## git config
@@ -105,7 +105,7 @@ fi
 mkdir -pv ~/.icons/
 ln -sfv /usr/share/icons/Adwaita/ ~/.icons/default
 
-rm ~/.local/share/applications/userapp-Firefox-*.desktop
+rm -v ~/.local/share/applications/userapp-Firefox-*.desktop
 
 echo
 echo
