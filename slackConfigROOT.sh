@@ -8,7 +8,7 @@
 ## note that some configuration options may not match
 ## depending on the system, as config-o-matic tries
 ## to avoid overwriting most files
-CONFIGOMATICVERSION=5.9.41
+CONFIGOMATICVERSION=5.9.43
 
 
 if [ ! $UID = 0 ]; then
@@ -107,13 +107,6 @@ fi
 ## make sure we are home  ;^)
 cd
 
-if [ ! -z "$( aplay -l | grep Analog | grep 'card 1' )" ]; then
-  wget -N $ASOUNDCONF -P /etc/
-fi
-
-## sound fix for steam
-ln -sfv /etc/machine-id /var/lib/dbus/machine-id
-
 
 echo
 echo
@@ -178,6 +171,13 @@ if [ "$( uname -m )" = "x86_64" ]; then
   esac
 fi
 
+
+if [ ! -z "$( aplay -l | grep Analog | grep 'card 1' )" ]; then
+  wget -N $ASOUNDCONF -P /etc/
+fi
+
+## fix for steam & lutris
+dbus-uuidgen --ensure
 
 ## detect efi and replace lilo with a script that works
 if [ -d /boot/efi/EFI/boot/ ]; then
