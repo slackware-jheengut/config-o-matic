@@ -8,7 +8,7 @@
 ## note that some configuration options may not match
 ## depending on the system, as config-o-matic tries
 ## to avoid overwriting most files
-CONFIGOMATICVERSION=6.3.2
+CONFIGOMATICVERSION=6.4.0
 
 
 if [ ! $UID = 0 ]; then
@@ -21,19 +21,44 @@ fi
 
 ## versions!
 cd
-## get stable version number
+## get stable slackware version
 wget www.slackware.com -O slackware-home-page.html -P ~/
 cat ~/slackware-home-page.html | grep "is released!" | head -1 | sed 's/Slackware//g' | \
-  sed 's/is released!//g' | sed 's/ //g' > ~/SlackwareStableVersion
+  sed 's/is released!//g' | sed 's/ //g' > ~/slackwareStableVersion
 rm -v ~/slackware-home-page.html
 
-export SLACKSTAVER=${SLACKSTAVER="$( tr -d '\n\r' < ~/SlackwareStableVersion )"}
-export DASHSLACKSTAVER=${DASHSLACKSTAVER=-"$( tr -d '\n\r' < ~/SlackwareStableVersion )"}
+export SLACKSTAVER=${SLACKSTAVER="$( tr -d '\n\r' < ~/slackwareStableVersion )"}
+export DASHSLACKSTAVER=${DASHSLACKSTAVER=-"$( tr -d '\n\r' < ~/slackwareStableVersion )"}
+
+## sbopkg
+wget www.sbopkg.org -O sbopkg-home-page.html -P ~/
+cat ~/sbopkg-home-page.html | grep sbopkg | grep -G tgz | cut -d= -f2 | \
+  tr -d '"' > ~/sbopkgVersion
+rm -v ~/sbopkg-home-page.html
+
+export SBOPKGDL=${SBOPKGDL="$( tr -d '\n\r' < ~/sbopkgVersion )"}
+
+## slackpkg+
+wget sourceforge.net/projects/slackpkgplus/files/ -O slackpkgplus-download-page.html -P ~/
+cat ~/slackpkgplus-download-page.html | grep slackpkg%2B | head -1 | cut -d= -f2 | sed 's/\/download//' | \
+  tr -d '"' > ~/slackpkgPlusVersion
+rm -v ~/slackpkgplus-download-page.html
+
+export SPPLUSDL=${SPPLUSDL="$( tr -d '\n\r' < ~/slackpkgPlusVersion )"}
+
+## caledonia
+wget caledonia.sourceforge.net -O caledonia-home-page.html -P ~/
+cat ~/caledonia-home-page.html | grep Plasma-KDE%20Theme | cut -d= -f5 | tr -d '"' | tr -d "'" | sed 's@/download>Download <i class@@g' | \
+  sed 's@http://sourceforge.net/projects/caledonia/files/Caledonia%20%28Plasma-KDE%20Theme%29/@@g' > ~/caledoniaPlasmaVersion
+cat ~/caledonia-home-page.html | grep Official%20Wallpapers | cut -d= -f5 | tr -d '"' | tr -d "'" | sed 's@/download>Download <i class@@g' | \
+  sed 's@http://sourceforge.net/projects/caledonia/files/Caledonia%20Official%20Wallpapers/@@g' > ~/caledoniaWallpaperVersion
+rm -v ~/caledonia-home-page.html
+
+export CALPLAS=${CALPLAS="$( tr -d '\n\r' < ~/caledoniaPlasmaVersion )"}
+export CALWALL=${CALWALL="$( tr -d '\n\r' < ~/caledoniaWallpaperVersion )"}
+
 
 ## set config files here:
-SBOPKGDL="http://sbopkg.googlecode.com/files/sbopkg-0.37.0-noarch-1_cng.tgz"
-SPPLUSDL="http://sourceforge.net/projects/slackpkgplus/files/slackpkg%2B-1.4.0-noarch-1mt.txz"
-
 INSCRPT="https://raw.githubusercontent.com/ryanpcmcquen/linuxTweaks/master/slackware/initscript"
 
 BASHRC="https://raw.githubusercontent.com/ryanpcmcquen/linuxTweaks/master/slackware/root/.bashrc"
@@ -58,16 +83,6 @@ GETSOURCESTA="https://raw.githubusercontent.com/ryanpcmcquen/linuxTweaks/master/
 GETSOURCECUR="https://raw.githubusercontent.com/ryanpcmcquen/linuxTweaks/master/slackware/getSystemSlackBuildsCURRENT.sh"
 
 GETJAVA="https://raw.githubusercontent.com/ryanpcmcquen/linuxTweaks/master/slackware/getJavaSlackBuild.sh"
-
-wget caledonia.sourceforge.net -O caledonia-home-page.html -P ~/
-cat ~/caledonia-home-page.html | grep Plasma-KDE%20Theme | cut -d= -f5 | tr -d '"' | tr -d "'" | sed 's@/download>Download <i class@@g' | \
-  sed 's@http://sourceforge.net/projects/caledonia/files/Caledonia%20%28Plasma-KDE%20Theme%29/@@g' > ~/CaledoniaPlasmaVersion
-cat ~/caledonia-home-page.html | grep Official%20Wallpapers | cut -d= -f5 | tr -d '"' | tr -d "'" | sed 's@/download>Download <i class@@g' | \
-  sed 's@http://sourceforge.net/projects/caledonia/files/Caledonia%20Official%20Wallpapers/@@g' > ~/CaledoniaWallpaperVersion
-rm -v ~/caledonia-home-page.html
-
-export CALPLAS=${CALPLAS="$( tr -d '\n\r' < ~/CaledoniaPlasmaVersion )"}
-export CALWALL=${CALWALL="$( tr -d '\n\r' < ~/CaledoniaWallpaperVersion )"}
 
 MINECRAFTDL="https://s3.amazonaws.com/Minecraft.Download/launcher/Minecraft.jar"
 
@@ -623,6 +638,7 @@ if [ "$MISCELLANY" = true ]; then
 
   ## android stuff!
   no_prompt_sbo_pkg_install gmtp
+  no_prompt_sbo_pkg_install android-tools
   no_prompt_sbo_pkg_install android-studio
 
   ## librecad
@@ -853,7 +869,7 @@ fi
 /etc/rc.d/rc.alsa
 if [ ! -z "$( aplay -l | grep Analog | grep 'card 1' )" ]; then
   amixer set -c 1 Master 0% unmute
-  amixer set -c 1 Master 75% unmute
+  amixer set -c 1 Master 80% unmute
   amixer set -c 1 PCM 0% unmute
   amixer set -c 1 PCM 90% unmute
   amixer set -c 1 Mic 0% unmute
@@ -862,7 +878,7 @@ if [ ! -z "$( aplay -l | grep Analog | grep 'card 1' )" ]; then
   amixer set -c 1 Capture 50% cap
 else
   amixer set Master 0% unmute
-  amixer set Master 75% unmute
+  amixer set Master 80% unmute
   amixer set PCM 0% unmute
   amixer set PCM 90% unmute
   amixer set Mic 0% unmute
@@ -899,9 +915,11 @@ echo >> ~/.config-o-matic_$CONFIGOMATICVERSION
 echo "========================================" >> ~/.config-o-matic_$CONFIGOMATICVERSION
 echo >> ~/.config-o-matic_$CONFIGOMATICVERSION
 
-rm -v ~/SlackwareStableVersion
-rm -v ~/CaledoniaPlasmaVersion
-rm -v ~/CaledoniaWallpaperVersion
+rm -v ~/slackwareStableVersion
+rm -v ~/sbopkgVersion
+rm -v ~/slackpkgPlusVersion
+rm -v ~/caledoniaPlasmaVersion
+rm -v ~/caledoniaWallpaperVersion
 
 ## thanks!
 echo
