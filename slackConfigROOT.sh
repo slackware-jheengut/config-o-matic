@@ -8,7 +8,7 @@
 ## note that some configuration options may not match
 ## depending on the system, as config-o-matic tries
 ## to avoid overwriting most files
-CONFIGOMATICVERSION=6.4.15
+CONFIGOMATICVERSION=6.4.16
 
 
 if [ ! $UID = 0 ]; then
@@ -76,8 +76,7 @@ TOUCHPCONF="https://raw.githubusercontent.com/ryanpcmcquen/linuxTweaks/master/51
 
 ASOUNDCONF="https://raw.githubusercontent.com/ryanpcmcquen/linuxTweaks/master/asound.conf"
 
-GETEXTRASTA="https://raw.githubusercontent.com/ryanpcmcquen/linuxTweaks/master/slackware/getExtraSlackBuildsSTABLE.sh"
-GETEXTRACUR="https://raw.githubusercontent.com/ryanpcmcquen/linuxTweaks/master/slackware/getExtraSlackBuildsCURRENT.sh"
+GETEXTRASLACK="https://raw.githubusercontent.com/ryanpcmcquen/linuxTweaks/master/slackware/getExtraSlackBuilds.sh"
 
 GETSOURCESTA="https://raw.githubusercontent.com/ryanpcmcquen/linuxTweaks/master/slackware/getSystemSlackBuildsSTABLE.sh"
 GETSOURCECUR="https://raw.githubusercontent.com/ryanpcmcquen/linuxTweaks/master/slackware/getSystemSlackBuildsCURRENT.sh"
@@ -842,11 +841,11 @@ fi
 
 ## used to be beginning of SCRIPTS
 
+wget -N $GETEXTRASLACK -P ~/
+
 if [ "$CURRENT" = true ]; then
-  wget -N $GETEXTRACUR -P ~/
   wget -N $GETSOURCECUR -P ~/
 else
-  wget -N $GETEXTRASTA -P ~/
   wget -N $GETSOURCESTA -P ~/
 fi
 
