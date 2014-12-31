@@ -8,7 +8,7 @@
 ## note that some configuration options may not match
 ## depending on the system, as config-o-matic tries
 ## to avoid overwriting most files
-CONFIGOMATICVERSION=6.4.19
+CONFIGOMATICVERSION=6.4.21
 
 
 if [ ! $UID = 0 ]; then
@@ -579,6 +579,12 @@ if [ "$MISCELLANY" = true ]; then
   no_prompt_sbo_pkg_install e16
   no_prompt_sbo_pkg_install gmrun
 
+  ## pekwm!
+  no_prompt_sbo_pkg_install pekwm
+
+  ## lumina!
+  no_prompt_sbo_pkg_install lumina
+
   if [ -z "$( cat /usr/share/e16/config/bindings.cfg | grep gmrun )" ]; then
     echo >> /usr/share/e16/config/bindings.cfg
     echo "## my bindings" >> /usr/share/e16/config/bindings.cfg
@@ -878,9 +884,9 @@ fi
 /etc/rc.d/rc.alsa
 if [ ! -z "$( aplay -l | grep Analog | grep 'card 1' )" ]; then
   amixer set -c 1 Master 0% unmute
-  amixer set -c 1 Master 80% unmute
+  amixer set -c 1 Master 90% unmute
   amixer set -c 1 Headphone 0% unmute
-  amixer set -c 1 Headphone 80% unmute
+  amixer set -c 1 Headphone 60% unmute
   amixer set -c 1 PCM 0% unmute
   amixer set -c 1 PCM 90% unmute
   amixer set -c 1 Mic 0% unmute
@@ -889,9 +895,9 @@ if [ ! -z "$( aplay -l | grep Analog | grep 'card 1' )" ]; then
   amixer set -c 1 Capture 50% cap
 else
   amixer set Master 0% unmute
-  amixer set Master 80% unmute
+  amixer set Master 90% unmute
   amixer set Headphone 0% unmute
-  amixer set Headphone 80% unmute
+  amixer set Headphone 60% unmute
   amixer set PCM 0% unmute
   amixer set PCM 90% unmute
   amixer set Mic 0% unmute
