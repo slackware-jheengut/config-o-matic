@@ -8,7 +8,7 @@
 ## note that some configuration options may not match
 ## depending on the system, as config-o-matic tries
 ## to avoid overwriting most files
-CONFIGOMATICVERSION=6.6.9
+CONFIGOMATICVERSION=6.7.0
 
 
 if [ ! $UID = 0 ]; then
@@ -109,7 +109,9 @@ slackpkg_update_only() {
 ## a function in a function!
 slackpkg_full_upgrade() {
   slackpkg_update_only
-  slackpkg install-new
+  if [ -e /var/log/packages/xorg-* ]; then
+    slackpkg install-new
+  fi
   slackpkg upgrade-all
 }
 
@@ -190,18 +192,18 @@ elif [ ! "$OGCONFIG" = true ]; then
       echo You are not installing WICD.;
       ;;
   esac
-  
-  read -p "Would you like to install a bunch of MISCELLANY?  [y/N]: " response
-  case $response in
-    [yY][eE][sS]|[yY])
-      export MISCELLANY=true;
-      echo You are installing MISCELLANY.;
-      ;;
-    *)
-      echo "You're pretty VANILLA, read the source for more.";
-      ;;
-  esac
-  
+  if [[ "$ARCH" != "arm" ]]; then
+    read -p "Would you like to install a bunch of MISCELLANY?  [y/N]: " response
+    case $response in
+      [yY][eE][sS]|[yY])
+        export MISCELLANY=true;
+        echo You are installing MISCELLANY.;
+        ;;
+      *)
+        echo "You're pretty VANILLA, read the source for more.";
+        ;;
+    esac
+  fi
   if [ "$(uname -m)" = "x86_64" ]; then
     read -p "Would you like to go MULTILIB?  [y/N]: " response
     case $response in
@@ -241,8 +243,7 @@ if [ -e /etc/lilo.conf ]; then
   ## and have no negative effects on others (in my testing at least)
   sed -i 's/^append=" vt.default_utf8=[0-9]"/append=" vt.default_utf8=1 acpi_osi=linux acpi_backlight=vendor"/g' /etc/lilo.conf
   
-  sed -i 's/^timeout = 50/timeout = 5/g' /etc/lilo.conf
-  sed -i 's/^timeout = 1200/timeout = 5/g' /etc/lilo.conf
+  sed -i 's/^timeout =.*/timeout = 5/g' /etc/lilo.conf
 fi
 
 lilo -v
@@ -260,29 +261,52 @@ sed -i 's/#\[0-9]+_SBo/\
 \[0-9]+_SBo\
 sbopkg/g' /etc/slackpkg/blacklist
 
-if [ "$CURRENT" = true ]; then
-  ### undo stable mirrors
-  sed -i \
-  "s_^http://ftp.osuosl.org/.2/slackware/slackware${DASHSLACKSTAVER}/_# http://ftp.osuosl.org/.2/slackware/slackware${DASHSLACKSTAVER}/_g" /etc/slackpkg/mirrors
-  sed -i \
-  "s_^http://ftp.osuosl.org/.2/slackware/slackware64${DASHSLACKSTAVER}/_# http://ftp.osuosl.org/.2/slackware/slackware64${DASHSLACKSTAVER}/_g" /etc/slackpkg/mirrors
-  ### osuosl mirrors are stable and fast (they are used for the changelogs), choose mirrorbrain if you are far from oregon
-  sed -i \
-  "s_^# http://ftp.osuosl.org/.2/slackware/slackware-current/_http://ftp.osuosl.org/.2/slackware/slackware-current/_g" /etc/slackpkg/mirrors
-  sed -i \
-  "s_^# http://ftp.osuosl.org/.2/slackware/slackware64-current/_http://ftp.osuosl.org/.2/slackware/slackware64-current/_g" /etc/slackpkg/mirrors
+## now with arm support! (since 6.7.0)
+if [[ "$ARCH" != "arm" ]]; then
+  if [ "$CURRENT" = true ]; then
+    ### undo stable mirrors, do current
+    if [ "$(uname -m)" = "x86_64" ]; then
+      sed -i \
+        "s_^http://ftp.osuosl.org/.2/slackware/slackware64${DASHSLACKSTAVER}/_# http://ftp.osuosl.org/.2/slackware/slackware64${DASHSLACKSTAVER}/_g" /etc/slackpkg/mirrors
+      sed -i \
+        "s_^# http://ftp.osuosl.org/.2/slackware/slackware64-current/_http://ftp.osuosl.org/.2/slackware/slackware64-current/_g" /etc/slackpkg/mirrors
+    else
+      sed -i \
+        "s_^http://ftp.osuosl.org/.2/slackware/slackware${DASHSLACKSTAVER}/_# http://ftp.osuosl.org/.2/slackware/slackware${DASHSLACKSTAVER}/_g" /etc/slackpkg/mirrors
+      sed -i \
+        "s_^# http://ftp.osuosl.org/.2/slackware/slackware-current/_http://ftp.osuosl.org/.2/slackware/slackware-current/_g" /etc/slackpkg/mirrors
+    fi
+  else
+    ### undo current, go stable
+    if [ "$(uname -m)" = "x86_64" ]; then
+      sed -i \
+        "s_^http://ftp.osuosl.org/.2/slackware/slackware64-current/_# http://ftp.osuosl.org/.2/slackware/slackware64-current/_g" /etc/slackpkg/mirrors
+      sed -i \
+        "s_^# http://ftp.osuosl.org/.2/slackware/slackware64${DASHSLACKSTAVER}/_http://ftp.osuosl.org/.2/slackware/slackware64${DASHSLACKSTAVER}/_g" /etc/slackpkg/mirrors
+    else
+      sed -i \
+        "s_^http://ftp.osuosl.org/.2/slackware/slackware-current/_# http://ftp.osuosl.org/.2/slackware/slackware-current/_g" /etc/slackpkg/mirrors
+      sed -i \
+        "s_^# http://ftp.osuosl.org/.2/slackware/slackware${DASHSLACKSTAVER}/_http://ftp.osuosl.org/.2/slackware/slackware${DASHSLACKSTAVER}/_g" /etc/slackpkg/mirrors
+    fi
+  fi
 else
-  ### undo current
-  sed -i \
-  "s_^http://ftp.osuosl.org/.2/slackware/slackware-current/_# http://ftp.osuosl.org/.2/slackware/slackware-current/_g" /etc/slackpkg/mirrors
-  sed -i \
-  "s_^http://ftp.osuosl.org/.2/slackware/slackware64-current/_# http://ftp.osuosl.org/.2/slackware/slackware64-current/_g" /etc/slackpkg/mirrors
-  ### osuosl mirrors are stable and fast (they are used for the changelogs), choose mirrorbrain if you are far from oregon
-  sed -i \
-  "s_^# http://ftp.osuosl.org/.2/slackware/slackware${DASHSLACKSTAVER}/_http://ftp.osuosl.org/.2/slackware/slackware${DASHSLACKSTAVER}/_g" /etc/slackpkg/mirrors
-  sed -i \
-  "s_^# http://ftp.osuosl.org/.2/slackware/slackware64${DASHSLACKSTAVER}/_http://ftp.osuosl.org/.2/slackware/slackware64${DASHSLACKSTAVER}/_g" /etc/slackpkg/mirrors
+  if [ "$CURRENT" = true ]; then
+    ### undo stable mirrors
+    sed -i \
+      "s_^http://mirrors.vbi.vt.edu/mirrors/linux/slackwarearm/slackwarearm${DASHSLACKSTAVER}/_# http://mirrors.vbi.vt.edu/mirrors/linux/slackwarearm/slackwarearm${DASHSLACKSTAVER}/_g" /etc/slackpkg/mirrors
+    ### do the current
+    sed -i \
+      "s_^# http://mirrors.vbi.vt.edu/mirrors/linux/slackwarearm/slackwarearm-current/_http://mirrors.vbi.vt.edu/mirrors/linux/slackwarearm/slackwarearm-current/_g" /etc/slackpkg/mirrors
+  else
+    ### undo current
+    sed -i \
+      "s_^http://mirrors.vbi.vt.edu/mirrors/linux/slackwarearm/slackwarearm-current/_# http://mirrors.vbi.vt.edu/mirrors/linux/slackwarearm/slackwarearm-current/_g" /etc/slackpkg/mirrors
+    sed -i \
+      "s_^# http://mirrors.vbi.vt.edu/mirrors/linux/slackwarearm/slackwarearm${DASHSLACKSTAVER}/_http://mirrors.vbi.vt.edu/mirrors/linux/slackwarearm/slackwarearm${DASHSLACKSTAVER}/_g" /etc/slackpkg/mirrors
+  fi
 fi
+
 
 ## set vim as the default editor
 if [ -z "$(cat /etc/profile | grep 'export EDITOR' && cat /etc/profile | grep 'export VISUAL')" ]; then
@@ -949,6 +973,11 @@ fi
 
 ## auto generic-kernel script
 wget -N https://raw.githubusercontent.com/ryanpcmcquen/linuxTweaks/master/slackware/switchToGenericKernel.sh -P ~/
+
+if [ -e /var/log/packages/raspi-* ]; then
+  curl -L --output /usr/bin/rpi-update https://raw.githubusercontent.com/Hexxeh/rpi-update/master/rpi-update \
+    && chmod +x /usr/bin/rpi-update
+fi
 
 ## script to install latest firefox developer edition
 wget -N https://raw.githubusercontent.com/ryanpcmcquen/ryanpc-slackbuilds/master/unofficial/fde/getFDE.sh -P ~/
