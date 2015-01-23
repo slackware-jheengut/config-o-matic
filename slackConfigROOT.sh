@@ -8,7 +8,7 @@
 ## note that some configuration options may not match
 ## depending on the system, as config-o-matic tries
 ## to avoid overwriting most files
-CONFIGOMATICVERSION=6.7.5
+CONFIGOMATICVERSION=6.7.7
 
 
 if [ ! $UID = 0 ]; then
@@ -248,11 +248,18 @@ if [ -e /etc/lilo.conf ]; then
   ## these fix brightness key issues on some comps
   ## and have no negative effects on others (in my testing at least)
   sed -i 's/^append=" vt.default_utf8=[0-9]"/append=" vt.default_utf8=1 acpi_osi=linux acpi_backlight=vendor"/g' /etc/lilo.conf
-  
   sed -i 's/^timeout =.*/timeout = 5/g' /etc/lilo.conf
+  ## uncomment all vga settings so
+  ## we don't end up with conflicts
+  sed -i "s_^vga=_#vga=_g" /etc/lilo.conf
+  ## 800x600x256 (so we can see the penguins!)
+  sed -i "s_^#vga=771_vga=771_g" /etc/lilo.conf
 fi
 
-lilo -v
+## only run lilo if it exists (arm doesn't have it)
+if [ ! -z "$(which lilo)" ]; then
+  lilo -v
+fi
 
 ## change to utf-8 encoding
 sed -i 's/^export LANG=en_US/#export LANG=en_US/g' /etc/profile.d/lang.sh
@@ -661,7 +668,7 @@ if [ "$MISCELLANY" = true ]; then
   no_prompt_sbo_pkg_install_or_upgrade pip
   pip install --upgrade asciinema
 
-  no_prompt_sbo_pkg_install_or_upgrade node
+  no_prompt_sbo_pkg_install_or_upgrade iojs
 
   ## hydrogen
   no_prompt_sbo_pkg_install_or_upgrade scons
@@ -745,6 +752,8 @@ if [ "$MISCELLANY" = true ]; then
 
   JACK=on no_prompt_sbo_pkg_install_or_upgrade ssr
 
+  no_prompt_sbo_pkg_install_or_upgrade p7zip
+
   ## wineing
   if [ "$MULTILIB" = true ] || [ "$ARCH" = "i486" ]; then
     no_prompt_sbo_pkg_install_or_upgrade webcore-fonts    
@@ -752,8 +761,17 @@ if [ "$MISCELLANY" = true ]; then
     no_prompt_sbo_pkg_install_or_upgrade cabextract
     no_prompt_sbo_pkg_install_or_upgrade wine    
     no_prompt_sbo_pkg_install_or_upgrade winetricks
+    no_prompt_sbo_pkg_install_or_upgrade wxPython
+    no_prompt_sbo_pkg_install_or_upgrade php-imagick
+    no_prompt_sbo_pkg_install_or_upgrade icoutils
+    no_prompt_sbo_pkg_install_or_upgrade playonlinux
   fi
   ##
+
+  ## nostalgic for me
+  no_prompt_sbo_pkg_install_or_upgrade codeblocks
+  no_prompt_sbo_pkg_install_or_upgrade geany
+  no_prompt_sbo_pkg_install_or_upgrade geany-plugins
 
   ## scribus
   ## cppunit breaks podofo on 32-bit
@@ -816,8 +834,6 @@ if [ "$MISCELLANY" = true ]; then
     no_prompt_sbo_pkg_install_or_upgrade kde-gtk-config
   fi
   no_prompt_sbo_pkg_install_or_upgrade QtCurve-Gtk2
-
-  no_prompt_sbo_pkg_install_or_upgrade p7zip
 
   no_prompt_sbo_pkg_install_or_upgrade dmg2img
 
