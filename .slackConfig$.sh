@@ -12,20 +12,17 @@ VIMRC="https://raw.githubusercontent.com/ryanpcmcquen/linuxTweaks/master/.vimrc"
 
 XBINDKEYSRC="https://raw.githubusercontent.com/ryanpcmcquen/linuxTweaks/master/.xbindkeysrc"
 
-FLUXBOXCONF="https://raw.githubusercontent.com/ryanpcmcquen/linuxTweaks/master/restoreFluxbox.sh"
-WMAKERCONF="https://raw.githubusercontent.com/ryanpcmcquen/linuxTweaks/master/windowmakerSetup.sh"
-PEKWMCONF="https://raw.githubusercontent.com/ryanpcmcquen/linuxTweaks/master/pekwmSetup.sh"
-LUMINACONF="https://raw.githubusercontent.com/ryanpcmcquen/linuxTweaks/master/luminaSetup.sh"
+FLUXBOXCONF="https://raw.githubusercontent.com/ryanpcmcquen/linuxTweaks/master/.restoreFluxbox.sh"
+WMAKERCONF="https://raw.githubusercontent.com/ryanpcmcquen/linuxTweaks/master/.windowmakerSetup.sh"
+PEKWMCONF="https://raw.githubusercontent.com/ryanpcmcquen/linuxTweaks/master/.pekwmSetup.sh"
+LUMINACONF="https://raw.githubusercontent.com/ryanpcmcquen/linuxTweaks/master/.luminaSetup.sh"
+KDECONF="https://raw.githubusercontent.com/ryanpcmcquen/linuxTweaks/master/.kdeSetup.sh"
+XFCECONF="https://raw.githubusercontent.com/ryanpcmcquen/linuxTweaks/master/.xfceSetup.sh"
+MATECONF="https://raw.githubusercontent.com/ryanpcmcquen/linuxTweaks/master/.mateSetup.sh"
 
 GKRELLCFIL="https://raw.githubusercontent.com/ryanpcmcquen/linuxTweaks/master/slackware/gkrellm2/user-config"
 GKRELLTFIL="https://raw.githubusercontent.com/ryanpcmcquen/linuxTweaks/master/slackware/gkrellm2/theme_config"
-GKRELLCONF="https://raw.githubusercontent.com/ryanpcmcquen/linuxTweaks/master/gkrellmConfig.sh"
-
-KDECONF="https://raw.githubusercontent.com/ryanpcmcquen/linuxTweaks/master/kdeSetup.sh"
-
-XFCECONF="https://raw.githubusercontent.com/ryanpcmcquen/linuxTweaks/master/xfceSetup.sh"
-
-MATECONF="https://raw.githubusercontent.com/ryanpcmcquen/linuxTweaks/master/mateSetup.sh"
+GKRELLCONF="https://raw.githubusercontent.com/ryanpcmcquen/linuxTweaks/master/.gkrellmConfig.sh"
 
 BRACKETSCONF="https://raw.githubusercontent.com/ryanpcmcquen/linuxTweaks/master/brackets.json"
 ZEDCONF="https://raw.githubusercontent.com/ryanpcmcquen/linuxTweaks/master/.config/zed/config/user.json"
@@ -33,6 +30,12 @@ ZEDCONF="https://raw.githubusercontent.com/ryanpcmcquen/linuxTweaks/master/.conf
 GITNAME="Ryan P.C. McQuen"
 GITEMAIL="ryan.q@linux.com"
 
+save_and_execute() {
+  for ITEM in "$@"; do
+    wget -N $ITEM -P ~/
+    sh ~/`basename $ITEM`
+  done
+}
 
 if [ $UID = 0 ]; then
 cat << EOF
@@ -90,48 +93,45 @@ git config --global credential.helper 'cache --timeout=3600'
 git config --global push.default simple
 git config --global core.pager "less -r"
 
-#### you can use this if you have a file that configures all 3
-### curl $BASHGITVIM | sh
-
 wget -N $GKRELLCFIL -P ~/.gkrellm2/
 wget -N $GKRELLTFIL -P ~/.gkrellm2/
-curl $GKRELLCONF | sh
+save_and_execute $GKRELLCONF
 
 pkill gkrellm &
 
 ## fluxbox
 if [ -d ~/.fluxbox ]; then
-  curl $FLUXBOXCONF | sh
+  save_and_execute $FLUXBOXCONF
 fi
 
 ## window maker
 if [ -d ~/GNUstep ]; then
-  curl $WMAKERCONF | sh
+  save_and_execute $WMAKERCONF
 fi
 
 ## pekwm
 if [ -d ~/.pekwm ]; then
-  curl $PEKWMCONF | sh
+  save_and_execute $PEKWMCONF
 fi
 
 ## lumina
 if [ -d ~/.lumina ]; then
-  curl $LUMINACONF | sh
+  save_and_execute $LUMINACONF
 fi
 
 ## kde
 if [ "`find /var/log/packages/ -name kdelibs-*`" ]; then
-  curl $KDECONF | sh
+  save_and_execute $KDECONF
 fi
 
 ## mate
 if [ "`find /var/log/packages/ -name pluma-*`" ]; then
-  curl $MATECONF | sh
+  save_and_execute $MATECONF
 fi
 
 ## xfce
 if [ "`find /var/log/packages/ -name Thunar-*`" ]; then
-  curl $XFCECONF | sh
+  save_and_execute $XFCECONF
 fi
 
 ## e16
@@ -171,7 +171,7 @@ wget -N $BRACKETSCONF -P ~/.config/Brackets/
 wget -N $ZEDCONF -P ~/.config/zed/config/
 
 ## atom goodies
-[ `which atom-apm` ] && atom-apm install atom-beautify linter linter-jslint \
+[ `which atom` ] && apm install atom-beautify linter linter-jslint \
   && wget -N https://raw.githubusercontent.com/ryanpcmcquen/linuxTweaks/master/.jsbeautifyrc -P ~/
 
 echo
