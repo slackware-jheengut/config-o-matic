@@ -7,23 +7,23 @@ NEARFREE: This is a separate script that should be run *instead* of the ROOT scr
 Options presented when running the ROOT script:
 
 1. CURRENT: Switches to slackware-current/slackware64-current mirrors instead of stable.
-2. WICD: Installs Wicd, disables NetworkManager.
-3. MISCELLANY: Installs a lot of additional packages, themes and miscellany.
-4. MULTILIB: Adds Eric Hameleer's MULTILIB repo to slackpkg+ and installs/upgrades it (64 bit only).
+2. MISCELLANY: Installs a lot of additional packages, themes and miscellany.
+3. MULTILIB: Adds Eric Hameleer's MULTILIB repo to slackpkg+ and installs/upgrades it (64 bit only).
+4. WIFIR: An easy wifi connection script. Reliable and simple. See it [here](https://github.com/ryanpcmcquen/linuxTweaks/blob/master/slackware/wifir).
 
 #####config-o-matic does a lot! You should read through the script and remove any parts you don't want.  ;-)
 ---
 
 (#):
 
-```cd; wget -N https://raw.githubusercontent.com/ryanpcmcquen/config-o-matic/stable/slackConfigROOT.sh; sh slackConfigROOT.sh; rm slackConfigROOT.sh```
+```cd; wget -N https://raw.githubusercontent.com/ryanpcmcquen/config-o-matic/stable/.slackConfigROOT.sh -P ~/; sh ~/.slackConfigROOT.sh```
 
 ($):
 
-```cd; wget -N https://raw.githubusercontent.com/ryanpcmcquen/config-o-matic/stable/slackConfig$.sh; sh slackConfig$.sh; rm slackConfig$.sh```
+```cd; wget -N https://raw.githubusercontent.com/ryanpcmcquen/config-o-matic/stable/.slackConfig%24.sh -P ~/; sh ~/.slackConfig\$.sh```
 
 ---
-To enable the wheel group, and add all non-root users to it (as well as the typical Slackware groups, run this:
+To enable the wheel group, and add all non-root users to it (as well as the typical Slackware groups), run this:
 
 ```
 ## enable the wheel group
@@ -32,9 +32,9 @@ if [ ! -e /etc/sudoers.d/wheel-enable ]; then
 fi
 
 ## add all non-root users (except ftp) to wheel group
-cat /etc/passwd | grep "/home" | cut -d: -f1 | sed '/ftp/d' | xargs -i usermod -G wheel -a {}
+getent passwd | grep "/home" | cut -d: -f1 | sed '/ftp/d' | xargs -i usermod -G wheel -a {}
 ## the standard groups in case you forget when you run adduser  ;-)
-cat /etc/passwd | grep "/home" | cut -d: -f1 | sed '/ftp/d' | \
+getent passwd | grep "/home" | cut -d: -f1 | sed '/ftp/d' | \
   xargs -i usermod -G audio,cdrom,floppy,plugdev,video,power,netdev,lp,scanner -a {}
 ```
 ---
@@ -49,4 +49,9 @@ cat /etc/passwd | grep "/home" | cut -d: -f1 | sed '/ftp/d' | \
 
 (#):
 
-```cd; wget -N https://raw.githubusercontent.com/ryanpcmcquen/config-o-matic/master/ryan -P ~/; sh ~/ryan; rm ~/ryan```
+```cd; wget -N https://raw.githubusercontent.com/ryanpcmcquen/config-o-matic/master/.ryan -P ~/; sh ~/.ryan```
+
+($):
+
+```cd; wget -N https://raw.githubusercontent.com/ryanpcmcquen/config-o-matic/master/.ryan%24 -P ~/; sh ~/.ryan\$```
+
